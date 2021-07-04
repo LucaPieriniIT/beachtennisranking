@@ -1,0 +1,7 @@
+@import url('./main-layout.css');
+@import url('./views/ranking-view.css');
+@import url('./views/about-view.css');
+@import url('lumo-css-framework/all-classes.css');    html {
+      --lumo-border-radius: 0px;
+
+    }
