@@ -1,4 +1,4 @@
-package xyz.pierini.rankings.paging;
+package xyz.pierini.rankings.grid;
 
 import java.io.Serializable;
 

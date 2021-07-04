@@ -8,12 +8,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import xyz.pierini.rankings.enumerator.GenderEnum;
 import xyz.pierini.rankings.enumerator.PlayerRankingEnum;
 import xyz.pierini.rankings.enumerator.YearEnum;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Document
 @CompoundIndex(name = "genderAndYearIndex", def = "{'gender': 1, 'year': 1}")
 public class Player {
