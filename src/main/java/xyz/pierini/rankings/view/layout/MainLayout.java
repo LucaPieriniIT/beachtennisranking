@@ -19,6 +19,7 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 
 import xyz.pierini.rankings.view.AboutView;
+import xyz.pierini.rankings.view.GraphView;
 import xyz.pierini.rankings.view.RankingView;
 
 /**
@@ -79,7 +80,8 @@ public class MainLayout extends AppLayout {
     private static Tab[] getAvailableTabs() {
         return new Tab[]{
         		createTab("Ranking", RankingView.class),
-        		createTab("About", AboutView.class)
+        		createTab("About", AboutView.class),
+        		createTab("Graph", GraphView.class)
         		};
     }
 
