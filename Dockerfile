@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jdk-11.0.2.9-slim
+FROM adoptopenjdk/openjdk11:alpine-slim
 WORKDIR /
 ENV PORT 8080
 EXPOSE 8080
