@@ -3,11 +3,16 @@ package xyz.pierini.rankings.view;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
@@ -27,7 +32,7 @@ import xyz.pierini.rankings.view.layout.MainLayout;
 @Route(value = "ranking", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 @PageTitle("Beach Tennis Ranking")
-public class RankingView extends HorizontalLayout {
+public class RankingView extends Span {
 
 	@Autowired
 	private PlayerService playerService;
@@ -48,10 +53,12 @@ public class RankingView extends HorizontalLayout {
 	private void configureGrid() {
 		grid.addClassName("ranking-grid");
 		grid.setHeightFull();
-		grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS,
-				GridVariant.LUMO_ROW_STRIPES);
+		grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, /* GridVariant.LUMO_NO_ROW_BORDERS */
+				GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_COMPACT, GridVariant.LUMO_COLUMN_BORDERS,
+				GridVariant.LUMO_WRAP_CELL_CONTENT);
 		grid.setSelectionMode(SelectionMode.NONE);
 		grid.setMultiSort(true);
+		grid.setColumnReorderingAllowed(true);
 
 		var filter = new Player();
 
@@ -62,19 +69,36 @@ public class RankingView extends HorizontalLayout {
 		
 		grid.removeAllColumns();
 		Grid.Column<Player> indexCol = grid.addColumn(item -> "").setKey("rowIndex");
+		
+		ComboBox<YearEnum> yearFilter = new ComboBox<>();
+		yearFilter.addValueChangeListener(event -> {
+			filter.setYear(event.getValue());
+			provider.refreshAll();
+		});
+		yearFilter.setItems(YearEnum.values());
+		yearFilter.setItemLabelGenerator(YearEnum::getValue);
+		yearFilter.setValue(YearEnum.TWENTYONE);
+		yearFilter.setReadOnly(true);
+		yearFilter.getElement().setAttribute("focus-target", "").setAttribute("theme", "small");
 
 		grid.addAttachListener(event -> {
-			grid.getColumnByKey("rowIndex").getElement().executeJs(
+			grid.getColumnByKey("rowIndex").setAutoWidth(true).getElement().executeJs(
 					"this.renderer = function(root, column, rowData) {root.textContent = rowData.index + 1}");
 			
 			setPlayerTotalCounter(filter, indexCol);
 		});
-		Grid.Column<Player> fullNameCol = grid.addColumn(Player::getFullName, "fullName").setHeader("Nome");
-		Grid.Column<Player> cityCodeCol = grid.addColumn(Player::getCityCode, "cityCode").setHeader("Provincia");
-		Grid.Column<Player> prevRankingCol = grid.addColumn(p -> p.getPreviousRanking().getValue(), "previousRanking").setHeader("2020");
-		Grid.Column<Player> currRankingCol = grid.addColumn(p -> p.getCurrentRanking().getValue(), "currentRanking").setHeader("2021");
-		Grid.Column<Player> noteCol = grid.addColumn(Player::getNote).setHeader("Note");
-		Grid.Column<Player> pointsCol = grid.addColumn(Player::getPoints, "points").setHeader("Punti");
+		Grid.Column<Player> fullNameCol = grid.addColumn(Player::getFullName, "fullName")
+				.setAutoWidth(true).setHeader("Nome");
+		Grid.Column<Player> cityCodeCol = grid.addColumn(Player::getCityCode, "cityCode")
+				.setAutoWidth(true).setHeader("Provincia");
+		Grid.Column<Player> prevRankingCol = grid.addColumn(p -> p.getPreviousRanking().getValue(), "previousRanking")
+				.setAutoWidth(true).setHeader(String.valueOf(Integer.parseInt(yearFilter.getValue().getValue()) - 1));
+		Grid.Column<Player> currRankingCol = grid.addColumn(p -> p.getCurrentRanking().getValue(), "currentRanking")
+				.setAutoWidth(true).setHeader(yearFilter.getValue().getValue());
+		Grid.Column<Player> noteCol = grid.addColumn(Player::getNote)
+				.setAutoWidth(true).setHeader("Note");
+		Grid.Column<Player> pointsCol = grid.addColumn(Player::getPoints, "points")
+				.setAutoWidth(true).setHeader("Punti");
 
 		provider.addDataProviderListener(o -> {
 			if (playerService != null) {
@@ -99,7 +123,7 @@ public class RankingView extends HorizontalLayout {
 		filterRow.getCell(fullNameCol).setComponent(fullNameFilter);
 		fullNameFilter.setSizeFull();
 		fullNameFilter.setPlaceholder(FILTER_PLACEHOLDER);
-		fullNameFilter.getElement().setAttribute("focus-target", "");
+		fullNameFilter.getElement().setAttribute("focus-target", "").setAttribute("theme", "small");
 		
 		var cityCodeFilter = new TextField();
 		cityCodeFilter.addValueChangeListener(event -> {
@@ -114,7 +138,7 @@ public class RankingView extends HorizontalLayout {
 		filterRow.getCell(cityCodeCol).setComponent(cityCodeFilter);
 		cityCodeFilter.setSizeFull();
 		cityCodeFilter.setPlaceholder(FILTER_PLACEHOLDER);
-		cityCodeFilter.getElement().setAttribute("focus-target", "");
+		cityCodeFilter.getElement().setAttribute("focus-target", "").setAttribute("theme", "small");
 		
 		ComboBox<PlayerRankingEnum> prevRankingFilter = new ComboBox<>();
 		prevRankingFilter.addValueChangeListener(event -> {
@@ -128,7 +152,7 @@ public class RankingView extends HorizontalLayout {
 		prevRankingFilter.setPlaceholder(FILTER_PLACEHOLDER);
 		prevRankingFilter.setClearButtonVisible(true);
 		prevRankingFilter.setAutoOpen(false);
-		prevRankingFilter.getElement().setAttribute("focus-target", "");
+		prevRankingFilter.getElement().setAttribute("focus-target", "").setAttribute("theme", "small");
 		
 		ComboBox<PlayerRankingEnum> currRankingFilter = new ComboBox<>();
 		currRankingFilter.addValueChangeListener(event -> {
@@ -142,7 +166,7 @@ public class RankingView extends HorizontalLayout {
 		currRankingFilter.setPlaceholder(FILTER_PLACEHOLDER);
 		currRankingFilter.setClearButtonVisible(true);
 		currRankingFilter.setAutoOpen(false);
-		currRankingFilter.getElement().setAttribute("focus-target", "");
+		currRankingFilter.getElement().setAttribute("focus-target", "").setAttribute("theme", "small");
 		
 		var noteFilter = new TextField();
 		noteFilter.addValueChangeListener(event -> {
@@ -157,7 +181,7 @@ public class RankingView extends HorizontalLayout {
 		filterRow.getCell(noteCol).setComponent(noteFilter);
 		noteFilter.setSizeFull();
 		noteFilter.setPlaceholder(FILTER_PLACEHOLDER);
-		noteFilter.getElement().setAttribute("focus-target", "");
+		noteFilter.getElement().setAttribute("focus-target", "").setAttribute("theme", "small");
 		
 		/*var pointsFilter = new NumberField();
 		pointsFilter.addValueChangeListener(event -> {
@@ -186,24 +210,27 @@ public class RankingView extends HorizontalLayout {
 		});
 		genderFilter.setItems(GenderEnum.values());
 		genderFilter.setValue(GenderEnum.M);
-		filterRow.getCell(indexCol).setComponent(genderFilter);
-		//genderFilter.setSizeFull();
-		genderFilter.getElement().setAttribute("focus-target", "");
+		genderFilter.getElement().setAttribute("focus-target", "").setAttribute("theme", "small");
 		
-		ComboBox<YearEnum> yearFilter = new ComboBox<>();
-		yearFilter.addValueChangeListener(event -> {
-			filter.setYear(event.getValue());
-			provider.refreshAll();
+		var resetFilters = new Button("Reset filtri", new Icon(VaadinIcon.CLOSE_SMALL));
+		resetFilters.addThemeVariants(ButtonVariant.LUMO_SMALL);
+		resetFilters.addClickListener(c -> {
+			// TODO vengono fatte troppe query!!!
+			genderFilter.setValue(null);
+			yearFilter.setValue(YearEnum.TWENTYONE);
+			noteFilter.setValue("");
+			currRankingFilter.setValue(null);
+			prevRankingFilter.setValue(null);
+			cityCodeFilter.setValue("");
+			fullNameFilter.setValue("");
 		});
-		yearFilter.setItems(YearEnum.values());
-		yearFilter.setItemLabelGenerator(YearEnum::getValue);
-		yearFilter.setValue(YearEnum.TWENTYONE);
-		yearFilter.setReadOnly(true);
-		//genderFilter.setSizeFull();
-		yearFilter.getElement().setAttribute("focus-target", "");
 		
-		var halfheaderRow = grid.prependHeaderRow();
-		halfheaderRow.getCell(indexCol).setComponent(yearFilter);
+		var hl = new HorizontalLayout();
+		hl.add(yearFilter, genderFilter, resetFilters);
+		
+		var topRow = grid.prependHeaderRow();
+		var headerCell = topRow.join(grid.getColumns().toArray(Grid.Column[]::new));
+		headerCell.setComponent(hl);
 
 	}
 
@@ -213,7 +240,7 @@ public class RankingView extends HorizontalLayout {
 		if (total == 1) {
 			what = "giocatore";
 		}
-		indexCol.setHeader("Totale: " + total + " " + what);
+		indexCol.setFooter("Totale: " + total + " " + what);
 	}
 
 }

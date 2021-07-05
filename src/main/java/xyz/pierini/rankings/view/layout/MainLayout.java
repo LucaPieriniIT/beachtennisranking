@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -63,10 +62,10 @@ public class MainLayout extends AppLayout {
         Image logo = new Image("images/logo.png", "Beach Tennis Ranking logo");
         logo.setId("logo");
         header.add(logo);
-        Avatar avatar = new Avatar();
-        avatar.addClassNames("ms-auto", "me-m");
+        /*Avatar avatar = new Avatar();
+        avatar.addClassNames("ms-auto", "me-m");*/
         header.add(new H1("Beach Tennis Ranking"));
-        header.add(avatar);
+        //header.add(avatar);
         return header;
     }
 
